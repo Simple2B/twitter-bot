@@ -76,3 +76,8 @@ body {
 .main {
     flex-grow: 1;
 }
+
+.login__message {
+  padding-top: 250px;
+  text-align: center;
+}
