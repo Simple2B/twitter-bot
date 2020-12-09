@@ -5,6 +5,8 @@ import tweepy
 
 from app.models import Bot
 from app.logger import log
+from app.controllers import parse_gsheet
+
 
 def create_api():
     """This function collects the consumer and access keys, creates an api object and returns the authenticated api
@@ -56,7 +58,7 @@ class Stream_Listener(tweepy.StreamListener):
         :param tweet: tweet from listening to the stream
         """
         if tweet.in_reply_to_status_id is not None or tweet.user.id == self.me.id:
-            # This tweet is a reply or I'm its author so, ignore it
+            # This tweet is a reply or I'm its author so ignore it
             return
         if not tweet.favorited:
             # Mark it as Liked, since we have not done it yet
@@ -90,9 +92,9 @@ class Stream_Listener(tweepy.StreamListener):
             print(tweepy.TweepError, status_code)
 
 
-def run_bot(follow=None, keyword=None):
-    """Main method to initialize the api, create a Stream_Listener object to track tweets based on certain keywords and
-    follow tweet owners and the mentors.
+def run_bot(keywords=None):
+    """
+    Main method to initialize the api, create a Stream_Listener object to track tweets based on certain keywords.
     """
     bot = Bot.query.first()
     if not bot:
@@ -100,20 +102,20 @@ def run_bot(follow=None, keyword=None):
     bot.pid = os.getpid()
     bot.save()
 
-    if not follow:
-        # TODO get followers list from DB?
-        pass
+    # if not follow:
+    #     # TODO get followers list from DB?
+    #     pass
 
-    if not keyword:
-        # TODO get keywords from Google Sheets
-        pass
+    if not keywords:
+        # parse google sheet and save keywords to DB
+        keywords = parse_gsheet()
 
     api = create_api()
     my_stream_listener = Stream_Listener(api)
     my_stream = tweepy.Stream(auth=api.auth, listener=my_stream_listener)
 
     # , is_async=True, languages=["en"]
-    my_stream.filter(track=keyword, follow=follow)
+    my_stream.filter(track=keywords)
 
 
 
