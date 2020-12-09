@@ -1,0 +1,15 @@
+#TODO:
+
+1) Update list of tracked accounts
+    - db models
+    - form to validate and add accounts
+    - accounts view
+2) Compare posts to a list of keywords
+    - set up connection to googlesheet
+    - update keywords from frontend?
+    - controller to parse and find keywords
+3) Main TwitterBot module
+    - set up API keys
+    - assign chron workers
+    - monitor results
+    - retweets
