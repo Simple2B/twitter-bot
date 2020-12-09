@@ -5,6 +5,9 @@ import click
 
 from app import create_app, db, models, forms
 from app.models import User
+from app.logger import log
+from app.controllers import run_bot, start_bot, stop_bot
+
 
 app = create_app()
 ADMIN_USERNAME = os.environ.get("ADMIN_USERNAME", "admin")
@@ -54,6 +57,23 @@ def create_db():
 def drop_db():
     """Drop the current database."""
     db.drop_all()
+
+
+@app.cli.command()
+def bot():
+    log(log.DEBUG, 'Starting bot')
+    run_bot()
+
+
+@app.cli.command()
+@click.option('--start/--stop', default=True)
+def manager(start):
+    if start:
+        log(log.INFO, 'Starting bot')
+        start_bot()
+    else:
+        log(log.INFO, 'Shutting down bot')
+        stop_bot()
 
 
 if __name__ == "__main__":
