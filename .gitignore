@@ -15,6 +15,7 @@ dataframes_test/
 *.pyc
 /*.sqlite3
 .flaskenv
+gspread.json
 
 **/.DS_Store
 

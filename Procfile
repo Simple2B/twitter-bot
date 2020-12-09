@@ -1,2 +1,2 @@
-worker: python ztm-bot.py
-search: python search.py
+worker: python ./twitter-bot/bot.py
+search: python ./twitter-bot/search.py
