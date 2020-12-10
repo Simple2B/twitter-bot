@@ -118,9 +118,6 @@ def run_bot(keywords=None):
     my_stream.filter(track=keywords)
 
 
-
-
-
 if __name__ == '__main__':
     # "224115510", "2998698451", "743086819"
     # "#keywords"

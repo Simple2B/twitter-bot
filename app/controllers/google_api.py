@@ -14,7 +14,8 @@ def parse_gsheet():
     for value in worksheet.col_values(1):
         if value.isspace() or not value:
             continue
-        if value not in Keyword.query.filter(Keyword.word == value):
+        verify_value = Keyword.query.filter(Keyword.word == value).first()
+        if not verify_value:
             new_value = Keyword(word=value)
             db.session.add(new_value)
         keywords.append(value)

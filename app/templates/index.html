@@ -4,9 +4,17 @@
   {% block content %}
     {% if current_user.is_authenticated %}
       <div class="container">
-        <h1>Welcome!</h1>
-        <hr>
-        <p>{{keywords}}</p>
+        <div class="bot__inner">
+          <div class="bot__status">
+            {% if not bot.is_active %}
+              <span class="bot__status-text">Bot is currently offline</span>
+              <a class="bot__btn bot__btn--start" href="{{url_for('main.run_bot')}}">Start Bot</a>
+            {% else %}
+              <span class="bot__status-text">Bot is currently running</span>
+              <a class="bot__btn bot__btn--stop" href="{{url_for('main.terminate_bot')}}">Stop Bot</a>
+            {% endif %}
+          </div>
+        </div>
       </div>
     {% else %}
       <h2 class="login__message">Please log in to start using the app.</h2>

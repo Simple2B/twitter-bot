@@ -81,3 +81,36 @@ body {
   padding-top: 250px;
   text-align: center;
 }
+
+.bot {
+
+}
+
+.bot__inner {
+  position: relative;
+}
+
+.bot__status {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+}
+
+.bot__btn {
+  display: block;
+  padding: 15px;
+  color: #fff;
+  text-align: center;
+}
+
+.bot__btn:hover {
+  color: #fff;
+}
+
+.bot__btn--start {
+  background-color: rgb(13, 190, 13);
+}
+
+.bot__btn--stop {
+  background-color: rgb(190, 13, 13);
+}
