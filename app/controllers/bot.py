@@ -60,17 +60,17 @@ class Stream_Listener(tweepy.StreamListener):
         if tweet.in_reply_to_status_id is not None or tweet.user.id == self.me.id:
             # This tweet is a reply or I'm its author so ignore it
             return
-        if not tweet.favorited:
-            # Mark it as Liked, since we have not done it yet
-            try:
-                tweet.favorite()
-                print('Stream favorited tweet:', tweet.text)
-            except tweepy.TweepError as error:
-                print(error)
+        # if not tweet.favorited:
+        #     # Mark it as Liked, since we have not done it yet
+        #     try:
+        #         tweet.favorite()
+        #         print('Stream favorited tweet:', tweet.text)
+        #     except tweepy.TweepError as error:
+        #         print(error)
         if not tweet.retweeted:
             # Retweet, since we have not retweeted it yet
             try:
-                tweet.retweet()
+                # tweet.retweet()
                 print('Stream retweeted tweet:', tweet.text)
             except tweepy.TweepError as error:
                 print(error)

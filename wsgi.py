@@ -61,6 +61,7 @@ def drop_db():
 
 @app.cli.command()
 def bot():
+    """Start Twitter Stream bot."""
     log(log.DEBUG, 'Starting bot')
     run_bot()
 
@@ -68,6 +69,7 @@ def bot():
 @app.cli.command()
 @click.option('--start/--stop', default=True)
 def manager(start):
+    """Start Twitter Stream bot manager."""
     if start:
         log(log.INFO, 'Starting bot')
         start_bot()
