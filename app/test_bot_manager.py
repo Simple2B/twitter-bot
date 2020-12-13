@@ -54,7 +54,7 @@ def test_manager_logic(client):
 
     client.get('/start_bot_stream', follow_redirects=True)
     bot_manager(client)
-    
+
     res = client.get('/restart_bot_stream', follow_redirects=True)
     assert res.status_code == 200
     response = bot_manager(client)

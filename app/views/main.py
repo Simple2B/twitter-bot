@@ -1,7 +1,6 @@
 from flask import render_template, Blueprint, flash, redirect, url_for, make_response
 from flask_login import login_required
 
-from app.controllers import start_bot, stop_bot
 from app.models import Bot
 
 main_blueprint = Blueprint("main", __name__)

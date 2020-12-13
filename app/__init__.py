@@ -21,7 +21,6 @@ def create_app(environment='development'):
         User,
         AnonymousUser,
     )
-    from app.controllers import start_bot, stop_bot
 
     # Instantiate app.
     app = Flask(__name__)
