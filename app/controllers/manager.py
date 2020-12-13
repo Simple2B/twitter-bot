@@ -33,7 +33,6 @@ def start_bot():
         return 4
     log(log.INFO, "Bot started with pid [%d]", bot.pid)
     bot.status = Bot.StatusType.active
-    bot.action = Bot.ActionType.start
     bot.save()
     return 0
 

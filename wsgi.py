@@ -80,10 +80,6 @@ def manager(start):
         bot = Bot.query.first()
 
         # Initial bot activation
-        if not bot:
-            log(log.INFO, 'No bot found...')
-            start_bot()
-
         if bot.status == Bot.StatusType.active:
             if bot.action == Bot.ActionType.stop:
                 log(log.INFO, 'Terminating bot with PID [%d]', bot.pid)
@@ -96,7 +92,7 @@ def manager(start):
                 return
         else:
             if bot.action == Bot.ActionType.start:
-                log(log.INFO, 'Attempting to start bot')
+                log(log.INFO, 'Received start_bot signal')
                 start_bot()
             elif bot.action == Bot.ActionType.restart:
                 log(log.INFO, 'Restarting bot with PID [%d]', bot.pid)

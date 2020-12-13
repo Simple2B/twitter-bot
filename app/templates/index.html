@@ -8,6 +8,7 @@
           <div class="bot__status">
             {% if not bot.is_active %}
               <span class="bot__status-text">Bot is currently offline</span>
+              <button class="bot__status-refresh" onclick="checkBotStatus()">Refresh</button>
               <a class="bot__btn bot__btn--start" href="{{url_for('main.run_bot')}}">Start Bot</a>
             {% else %}
               <span class="bot__status-text">Bot is currently running</span>
@@ -19,4 +20,18 @@
     {% else %}
       <h2 class="login__message">Please log in to start using the app.</h2>
     {% endif %}
+  {% endblock %}
+
+  {% block scripts %}
+  <script>
+    function checkBotStatus() {
+      fetch(`${window.location.origin}/refresh_bot_status`)
+        .then(res => res.json())
+        .then(data => {
+          const statusDisplay = document.querySelector('.bot__status-text');
+          statusDisplay.textContent = data.status
+        })
+        .catch(err => alert(err));
+    }
+  </script>
   {% endblock %}
