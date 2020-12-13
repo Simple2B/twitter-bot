@@ -70,7 +70,7 @@ class Stream_Listener(tweepy.StreamListener):
         #         print(error)
         if not tweet.retweeted and 'RT @' not in tweet.text:
             # Retweet, since we have not retweeted it yet
-            if [keyword for keyword in self.keywords if(keyword in tweet.text)]:
+            if (keyword for keyword in self.keywords if(keyword in tweet.text)):
                 try:
                     # tweet.retweet()
                     print('Stream retweeted tweet:', tweet.text)

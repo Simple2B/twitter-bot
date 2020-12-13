@@ -12,6 +12,7 @@
               <a class="bot__btn bot__btn--start" href="{{url_for('main.run_bot')}}">Start Bot</a>
             {% else %}
               <span class="bot__status-text">Bot is currently running</span>
+              <button class="bot__status-refresh" onclick="checkBotStatus()">Refresh</button>
               <a class="bot__btn bot__btn--stop" href="{{url_for('main.terminate_bot')}}">Stop Bot</a>
             {% endif %}
           </div>
