@@ -2,7 +2,6 @@
 
 import os
 import time
-import subprocess
 
 from app.models import Bot
 from app.logger import log
@@ -29,9 +28,6 @@ def start_bot():
             bot.status = Bot.StatusType.disabled
             bot.save()
     # run bot
-    # cmd = "source .venv/bin/activate; flask bot"
-    # subprocess.call(cmd, shell=True, executable='/bin/bash')
-    # subprocess.Popen(["source", ".venv/bin/python"])
     os.system('flask bot &')
     time.sleep(5)
     bot = Bot.query.first()

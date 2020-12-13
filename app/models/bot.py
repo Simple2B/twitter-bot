@@ -15,9 +15,16 @@ class Bot(db.Model, ModelMixin):
         active = "active"
         disabled = "disabled"
 
+    class ActionType(enum.Enum):
+        start = 'start'
+        stop = 'stop'
+        restart = 'restart'
+
     id = db.Column(db.Integer, primary_key=True)
     pid = db.Column(db.Integer, default=0)
-    status = db.Column(Enum(StatusType))
+    status = db.Column(Enum(StatusType), default=StatusType.disabled)
+    action = db.Column(Enum(ActionType))
+
 
     @property
     def is_active(self):

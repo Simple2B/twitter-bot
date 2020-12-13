@@ -20,4 +20,5 @@ def parse_gsheet():
             db.session.add(new_value)
         keywords.append(value)
     db.session.commit()
+    log(log.INFO, "Collected [%d] keywords", len(keywords))
     return keywords
