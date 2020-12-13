@@ -3,7 +3,7 @@ import time
 
 import tweepy
 
-from app.models import Bot
+from app.models import Bot, Keyword
 from app.logger import log
 from app.controllers import parse_gsheet
 
@@ -50,6 +50,7 @@ class Stream_Listener(tweepy.StreamListener):
     def __init__(self, api):
         self.api = api
         self.me = api.me()
+        self.keywords = [key.word for key in Keyword.query.all()]
 
     def on_status(self, tweet):
         """Checks the status of the tweet. Mark it as favourite if not already done it and retweet if not already
@@ -67,13 +68,14 @@ class Stream_Listener(tweepy.StreamListener):
         #         print('Stream favorited tweet:', tweet.text)
         #     except tweepy.TweepError as error:
         #         print(error)
-        if not tweet.retweeted:
+        if not tweet.retweeted and 'RT @' not in tweet.text:
             # Retweet, since we have not retweeted it yet
-            try:
-                # tweet.retweet()
-                print('Stream retweeted tweet:', tweet.text)
-            except tweepy.TweepError as error:
-                print(error)
+            if [keyword for keyword in self.keywords if(keyword in tweet.text)]:
+                try:
+                    # tweet.retweet()
+                    print('Stream retweeted tweet:', tweet.text)
+                except tweepy.TweepError as error:
+                    print(error)
 
     def on_error(self, status_code):
         """When encountering an error while listening to the stream, return False if `status_code` is 420 and print
@@ -82,11 +84,15 @@ class Stream_Listener(tweepy.StreamListener):
         :param status_code:
         :return: False when `status_code` is 420 to disconnect the stream.
         """
-        log(log.DEBUG, os.environ.get('ACCESS_TOKEN'))
+        bot = Bot.query.first()
         if status_code == 420:
             # returning False in on_error disconnects the stream
+            bot.status = Bot.StatusType.disabled
+            bot.action = Bot.ActionType.restart
+            bot.save()
             return False
         elif status_code == 429:
+            log(log.INFO, )
             time.sleep(900)
         else:
             print(tweepy.TweepError, status_code)
@@ -100,6 +106,8 @@ def run_bot(keywords=None):
     if not bot:
         bot = Bot()
     bot.pid = os.getpid()
+    bot.status = Bot.StatusType.active
+    bot.action = Bot.ActionType.start
     bot.save()
 
     # if not follow:
@@ -114,13 +122,8 @@ def run_bot(keywords=None):
     my_stream_listener = Stream_Listener(api)
     my_stream = tweepy.Stream(auth=api.auth, listener=my_stream_listener)
 
-    # , is_async=True, languages=["en"]
-    my_stream.filter(track=keywords)
+    my_stream.filter(track=keywords, languages=["en"])
 
 
 if __name__ == '__main__':
-    # "224115510", "2998698451", "743086819"
-    # "#keywords"
-    follow_list = []
-    keywords = []
-    run_bot(follow_list, keywords)
+    run_bot()

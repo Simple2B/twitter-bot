@@ -16,12 +16,16 @@ def index():
 @main_blueprint.route('/start_bot_stream')
 @login_required
 def run_bot():
-    start_bot()
     bot = Bot.query.first()
-    if bot and bot.status == Bot.StatusType.active:
-        flash("Bot has successfully started", 'success')
+    if not bot:
+        flash("An error occured while starting bot. Plesase try again", 'danger')
         return redirect(url_for('main.index'))
-    flash("An error occured while starting bot. Plesase try again", 'danger')
+    if bot.status == Bot.StatusType.active and bot.action == Bot.ActionType.start:
+        flash("Bot is already running", 'info')
+        return redirect(url_for('main.index'))
+    bot.action = Bot.ActionType.start
+    bot.save()
+    flash("Bot has successfully started", 'success')
     return redirect(url_for('main.index'))
 
 

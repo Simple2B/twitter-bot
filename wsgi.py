@@ -4,14 +4,19 @@ import os
 import click
 
 from app import create_app, db, models, forms
-from app.models import User
+from app.models import User, Bot
 from app.logger import log
-from app.controllers import run_bot, start_bot, stop_bot
+from app.controllers import run_bot, start_bot, stop_bot, restart_bot
 
 
 app = create_app()
 ADMIN_USERNAME = os.environ.get("ADMIN_USERNAME", "admin")
 ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "admin")
+
+
+def add_bot():
+    db.session.add(Bot())
+    db.session.commit()
 
 
 def add_admin():
@@ -29,6 +34,7 @@ def add_admin():
 def _init_db():
     db.create_all()
     add_admin()
+    add_bot()
 
 
 # flask cli context setup
@@ -71,10 +77,34 @@ def bot():
 def manager(start):
     """Start Twitter Stream bot manager."""
     if start:
-        log(log.INFO, 'Starting bot')
-        start_bot()
+        bot = Bot.query.first()
+
+        # Initial bot activation
+        if not bot:
+            log(log.INFO, 'No bot found...')
+            start_bot()
+
+        if bot.status == Bot.StatusType.active:
+            if bot.action == Bot.ActionType.stop:
+                log(log.INFO, 'Terminating bot with PID [%d]', bot.pid)
+                stop_bot()
+            elif bot.action == Bot.ActionType.restart:
+                log(log.INFO, 'Restarting bot with PID [%d]', bot.pid)
+                restart_bot()
+            else:
+                log(log.INFO, 'Bot with PID [%d] is already running', bot.pid)
+                return
+        else:
+            if bot.action == Bot.ActionType.start:
+                log(log.INFO, 'Attempting to start bot')
+                start_bot()
+            elif bot.action == Bot.ActionType.restart:
+                log(log.INFO, 'Restarting bot with PID [%d]', bot.pid)
+                restart_bot()
+            else:
+                log(log.INFO, 'Bot is disabled')
+                return
     else:
-        log(log.INFO, 'Shutting down bot')
         stop_bot()
 
 
