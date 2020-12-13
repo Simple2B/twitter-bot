@@ -61,18 +61,13 @@ class Stream_Listener(tweepy.StreamListener):
         if tweet.in_reply_to_status_id is not None or tweet.user.id == self.me.id:
             # This tweet is a reply or I'm its author so ignore it
             return
-        # if not tweet.favorited:
-        #     # Mark it as Liked, since we have not done it yet
-        #     try:
-        #         tweet.favorite()
-        #         print('Stream favorited tweet:', tweet.text)
-        #     except tweepy.TweepError as error:
-        #         print(error)
         if not tweet.retweeted and 'RT @' not in tweet.text:
-            # Retweet, since we have not retweeted it yet
-            if (keyword for keyword in self.keywords if(keyword in tweet.text)):
+            # Since Twitter API provides only approximate match to the track keywords, further filtering required
+            # in order to get precise match for the tweets
+            if [keyword for keyword in self.keywords if(keyword in tweet.text)]:
                 try:
                     # tweet.retweet()
+                    # currently printing results to console for testing purposes
                     print('Stream retweeted tweet:', tweet.text)
                 except tweepy.TweepError as error:
                     print(error)
