@@ -32,10 +32,22 @@ def run_bot():
 @main_blueprint.route('/stop_bot_stream')
 @login_required
 def terminate_bot():
-    stop_bot()
     bot = Bot.query.first()
-    if bot and bot.status == Bot.StatusType.disabled:
-        flash("Bot has successfully stopped", 'success')
+    if not bot:
+        flash("An error occured while stopping bot. Plesase try again", 'danger')
         return redirect(url_for('main.index'))
-    flash("An error occured while stopping bot. Plesase try again", 'danger')
+    bot.action = Bot.ActionType.stop
+    flash("Bot has successfully stopped", 'success')
+    return redirect(url_for('main.index'))
+
+    
+@main_blueprint.route('/restart_bot_stream')
+@login_required
+def restart_bot():
+    bot = Bot.query.first()
+    if not bot:
+        flash("An error occured while restarting bot. Plesase try again", 'danger')
+        return redirect(url_for('main.index'))
+    bot.action = Bot.ActionType.restart
+    flash("Bot has successfully restarted", 'success')
     return redirect(url_for('main.index'))
