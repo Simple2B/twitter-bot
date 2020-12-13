@@ -3,5 +3,5 @@
 WORK_DIR=~/twitter-bot
 cd $WORK_DIR
 source .venv/bin/activate
-flask --help >> ~/twitter-bot/test.txt
+flask manager
 #comment
