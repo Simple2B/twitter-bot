@@ -60,7 +60,6 @@ class Stream_Listener(tweepy.StreamListener):
         :param tweet: tweet from listening to the stream
         """
         if tweet.in_reply_to_status_id is not None or tweet.user.id == self.me.id:
-            log(log.INFO, "This tweet is a reply or I'm its author so ignore it")
             # This tweet is a reply or I'm its author so ignore it
             return
         if not tweet.retweeted and 'RT @' not in tweet.text:
