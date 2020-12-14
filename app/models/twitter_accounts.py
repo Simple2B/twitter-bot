@@ -7,4 +7,5 @@ class TwitterAccount(db.Model, ModelMixin):
     __tablename__ = 'twitter_accounts'
 
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(60), unique=True, nullable=False)
+    username = db.Column(db.String(60), unique=True, nullable=False)
+    twitter_id = db.Column(db.Integer(), unique=True)

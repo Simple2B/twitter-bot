@@ -19,6 +19,17 @@
             {% endif %}
           </div>
         </div>
+
+        <div class="bot__accounts">
+          <ul class="bot__account-list">
+            {% for account in accounts %}
+              <li class="bot__account">
+                <span class="bot__account-name">{{ account.username }}</span>
+                <button class="bot__delete-btn">Delete Account</button>
+              </li>
+            {% endfor %}
+          </ul>
+        </div>
       </div>
     {% else %}
       <h2 class="login__message">Please log in to start using the app.</h2>
@@ -26,7 +37,7 @@
   {% endblock %}
 
   {% block scripts %}
-  <script>
+  <script defer>
     function checkBotStatus() {
       fetch(`${window.location.origin}/refresh_bot_status`)
         .then(res => res.json())

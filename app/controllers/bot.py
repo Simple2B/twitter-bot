@@ -3,7 +3,7 @@ import time
 
 import tweepy
 
-from app.models import Bot, Keyword
+from app.models import Bot, Keyword, TwitterAccount
 from app.logger import log
 from app.controllers import parse_gsheet
 
@@ -95,6 +95,15 @@ class Stream_Listener(tweepy.StreamListener):
             log(log.ERROR, "[%s], [%d]", tweepy.TweepError.reason, status_code)
 
 
+def get_twitter_id(username: str):
+    api = create_api()
+    try:
+        user = api.get_user(username)
+        return user.id
+    except tweepy.TweepError as error:
+        log(log.ERROR, "[%s]", error.reason)
+
+
 def run_bot(keywords=None):
     """
     Main method to initialize the api, create a Stream_Listener object to track tweets based on certain keywords.
@@ -106,6 +115,7 @@ def run_bot(keywords=None):
     bot.status = Bot.StatusType.active
     bot.action = Bot.ActionType.start
     bot.save()
+    list_of_accounts = [account.twitter_id for account in TwitterAccount.query.all()]
 
     # if not follow:
     #     # TODO get followers list from DB?
@@ -119,4 +129,4 @@ def run_bot(keywords=None):
     my_stream_listener = Stream_Listener(api)
     my_stream = tweepy.Stream(auth=api.auth, listener=my_stream_listener)
 
-    my_stream.filter(track=keywords, languages=["en"])
+    my_stream.filter(track=keywords, follow=list_of_accounts, languages=["en"])
