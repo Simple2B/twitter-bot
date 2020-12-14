@@ -115,7 +115,7 @@ def run_bot(keywords=None):
     bot.status = Bot.StatusType.active
     bot.action = Bot.ActionType.start
     bot.save()
-    list_of_accounts = [account.twitter_id for account in TwitterAccount.query.all()]
+    list_of_accounts = [str(account.twitter_id) for account in TwitterAccount.query.all()]
 
     # if not follow:
     #     # TODO get followers list from DB?
