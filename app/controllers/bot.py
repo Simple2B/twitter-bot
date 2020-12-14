@@ -68,9 +68,9 @@ class Stream_Listener(tweepy.StreamListener):
             # in order to get precise match for the tweets
             if [keyword for keyword in self.keywords if(keyword in tweet.text)]:
                 try:
-                    # tweet.retweet()
+                    tweet.retweet()
                     # currently printing results to console for testing purposes
-                    print('Stream retweeted tweet:', tweet.text)
+                    # print('Stream retweeted tweet:', tweet.text)
                 except tweepy.TweepError as error:
                     log(log.ERROR, "[%s]", error.reason)
 
