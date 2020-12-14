@@ -3,7 +3,7 @@ import pytest
 from app import create_app, db
 from app.models import Bot
 
-from tests.utils import register, login, bot_manager
+from .utils import register, login, bot_manager
 
 
 @pytest.fixture
