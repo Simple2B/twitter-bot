@@ -8,7 +8,7 @@ from app.models import Keyword
 def parse_gsheet():
     log(log.INFO, "Parsing spreadsheet")
     gc = gspread.service_account(filename='gspread.json')
-    sheet = gc.open_by_key('1ipB3a9uxaAF5JUYY3fuo-A4VublvPZCRIyjw3uDICl4')
+    sheet = gc.open_by_key('1_rwgDcchoaZuKv0-9MtR99ZdA6ROYGlaamIPpRoX9nU')
     worksheet = sheet.sheet1
     keywords = []
     for value in worksheet.col_values(1):

@@ -37,8 +37,9 @@ def authenticate_api(api):
     try:
         api.verify_credentials()
     except tweepy.TweepError as error:
+        log(log.ERROR, "[%s]", error.reason)
         raise error
-    print("API created")
+    log(log.INFO, "API Created")
     return api
 
 
@@ -59,6 +60,7 @@ class Stream_Listener(tweepy.StreamListener):
         :param tweet: tweet from listening to the stream
         """
         if tweet.in_reply_to_status_id is not None or tweet.user.id == self.me.id:
+            log(log.INFO, "This tweet is a reply or I'm its author so ignore it")
             # This tweet is a reply or I'm its author so ignore it
             return
         if not tweet.retweeted and 'RT @' not in tweet.text:
@@ -70,7 +72,7 @@ class Stream_Listener(tweepy.StreamListener):
                     # currently printing results to console for testing purposes
                     print('Stream retweeted tweet:', tweet.text)
                 except tweepy.TweepError as error:
-                    print(error)
+                    log(log.ERROR, "[%s]", error.reason)
 
     def on_error(self, status_code):
         """When encountering an error while listening to the stream, return False if `status_code` is 420 and print
@@ -82,15 +84,16 @@ class Stream_Listener(tweepy.StreamListener):
         bot = Bot.query.first()
         if status_code == 420:
             # returning False in on_error disconnects the stream
+            log(log.ERROR, 'Received [%d] error', status_code)
             bot.status = Bot.StatusType.disabled
             bot.action = Bot.ActionType.restart
             bot.save()
             return False
         elif status_code == 429:
-            log(log.INFO, )
+            log(log.ERROR, "Received [%d] error, bot will sleep for 900 sec", status_code)
             time.sleep(900)
         else:
-            print(tweepy.TweepError, status_code)
+            log(log.ERROR, "[%s], [%d]", tweepy.TweepError.reason, status_code)
 
 
 def run_bot(keywords=None):
@@ -118,7 +121,3 @@ def run_bot(keywords=None):
     my_stream = tweepy.Stream(auth=api.auth, listener=my_stream_listener)
 
     my_stream.filter(track=keywords, languages=["en"])
-
-
-if __name__ == '__main__':
-    run_bot()

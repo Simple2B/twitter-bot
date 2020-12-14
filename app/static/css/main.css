@@ -82,10 +82,6 @@ body {
   text-align: center;
 }
 
-.bot {
-
-}
-
 .bot__inner {
   position: relative;
 }
@@ -125,7 +121,7 @@ body {
 
 .bot__btn {
   display: block;
-  padding: 15px;
+  padding: 5px 15px;
   color: #fff;
   text-align: center;
   border-radius: 10px;
@@ -137,6 +133,11 @@ body {
 
 .bot__btn--start {
   background-color: rgb(13, 190, 13);
+}
+
+.bot__btn--restart {
+  margin-top: 10px;
+  background-color: rgb(247, 176, 44);
 }
 
 .bot__btn--stop {
