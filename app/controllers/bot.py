@@ -129,4 +129,4 @@ def run_bot(keywords=None):
     my_stream_listener = Stream_Listener(api)
     my_stream = tweepy.Stream(auth=api.auth, listener=my_stream_listener)
 
-    my_stream.filter(track=keywords, follow=list_of_accounts, languages=["en"])
+    my_stream.filter(follow=list_of_accounts, track=keywords, languages=["en"])
