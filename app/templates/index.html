@@ -18,6 +18,37 @@
               <a class="bot__btn bot__btn--restart" href="{{url_for('main.restart_bot')}}">Restart</a>
             {% endif %}
           </div>
+
+          <div class="bot__accounts">
+            <form action="{{ url_for('main.add_twitter_account') }}" class="bot__form form-inline" method="POST">
+              {{ form.hidden_tag() }}
+              <div class="form-group">
+                {% if form.username.errors %}
+                  {{ form.username(class="form-control is-invalid", type="text", placeholder="@username") }}
+                  <div class="invalid-feedback">
+                    {% for error in form.username.errors %}
+                      <span>{{ error }}</span>
+                    {% endfor %}
+                  </div>
+                {% else %}
+                  {{ form.username(class="form-control bot__form-input", type="text", placeholder="@username") }}
+                  {{ form.submit(class="form-control-submit-button bot__form-submit") }}
+                {% endif %}
+                <div class="help-block with-errors"></div>
+              </div>
+            </form>
+
+          
+            <ul class="bot__account-list">
+              {% for account in accounts %}
+                <li class="bot__account">
+                  <span class="bot__account-name">{{ account.username }}</span>
+                  <span class="bot__account-id">{{ account.twitter_id }}</span>
+                  <a class="bot__delete-btn" href="{{ url_for('main.delete_twitter_account', twitter_id=account.twitter_id) }}">Delete Account</a>
+                </li>
+              {% endfor %}
+            </ul>
+          </div>
         </div>
       </div>
     {% else %}
@@ -26,7 +57,7 @@
   {% endblock %}
 
   {% block scripts %}
-  <script>
+  <script defer>
     function checkBotStatus() {
       fetch(`${window.location.origin}/refresh_bot_status`)
         .then(res => res.json())

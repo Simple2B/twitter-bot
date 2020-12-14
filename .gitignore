@@ -16,6 +16,7 @@ dataframes_test/
 /*.sqlite3
 .flaskenv
 gspread.json
+twit_acc.py
 
 **/.DS_Store
 

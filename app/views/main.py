@@ -1,15 +1,20 @@
 from flask import render_template, Blueprint, flash, redirect, url_for, make_response
 from flask_login import login_required
 
-from app.models import Bot
+from app.models import Bot, TwitterAccount
+from app.forms import AddTwitterAccountForm
+from app.controllers import get_twitter_id
+
 
 main_blueprint = Blueprint("main", __name__)
 
 
 @main_blueprint.route("/")
 def index():
+    form = AddTwitterAccountForm()
     bot = Bot.query.first()
-    return render_template("index.html", bot=bot)
+    twitter_accounts = TwitterAccount.query.all()
+    return render_template("index.html", bot=bot, form=form, accounts=twitter_accounts)
 
 
 @main_blueprint.route("/start_bot_stream")
@@ -62,3 +67,34 @@ def refresh_bot_status():
         return make_response({"status": "Bot is currently running"}, 200)
     else:
         return make_response({"status": "Bot is currently offline"}, 200)
+
+
+@main_blueprint.route("/add_twitter_account", methods=['GET', 'POST'])
+@login_required
+def add_twitter_account():
+    form = AddTwitterAccountForm()
+    if form.validate_on_submit():
+        username = form.username.data
+        if TwitterAccount.query.filter(TwitterAccount.username == username).first():
+            flash("Username is already added", "warning")
+            return redirect(url_for("main.index"))
+        twitter_id = get_twitter_id(username)
+        if not twitter_id:
+            flash("Username is invalid. Please check data and try again", "danger")
+            return redirect(url_for("main.index"))
+        twitter_account = TwitterAccount(username=form.username.data, twitter_id=twitter_id)
+        twitter_account.save()
+        flash("Username successfully added", "success")
+    return redirect(url_for("main.index"))
+
+
+@main_blueprint.route("/delete_twitter_account/<int:twitter_id>")
+@login_required
+def delete_twitter_account(twitter_id):
+    account = TwitterAccount.query.filter(TwitterAccount.twitter_id == twitter_id).first()
+    if not account:
+        flash("No account associated with this id. Please try again", "danger")
+        return redirect(url_for("main.index"))
+    account.delete()
+    flash("Account successfully deleted", "info")
+    return redirect(url_for("main.index"))
