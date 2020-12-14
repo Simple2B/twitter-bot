@@ -5,4 +5,4 @@ from wtforms.validators import DataRequired
 
 class AddTwitterAccountForm(FlaskForm):
     username = StringField('Twitter Account', [DataRequired()])
-    submit = SubmitField('Login')
+    submit = SubmitField('Add Account')

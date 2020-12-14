@@ -75,7 +75,7 @@ def add_twitter_account():
     form = AddTwitterAccountForm()
     if form.validate_on_submit():
         username = form.username.data
-        if TwitterAccount.query.filter(TwitterAccount.username == username):
+        if TwitterAccount.query.filter(TwitterAccount.username == username).first():
             flash("Username is already added", "warning")
             return redirect(url_for("main.index"))
         twitter_id = get_twitter_id(username)
@@ -85,4 +85,16 @@ def add_twitter_account():
         twitter_account = TwitterAccount(username=form.username.data, twitter_id=twitter_id)
         twitter_account.save()
         flash("Username successfully added", "success")
+    return redirect(url_for("main.index"))
+
+
+@main_blueprint.route("/delete_twitter_account/<int:twitter_id>")
+@login_required
+def delete_twitter_account(twitter_id):
+    account = TwitterAccount.query.filter(TwitterAccount.twitter_id == twitter_id).first()
+    if not account:
+        flash("No account associated with this id. Please try again", "danger")
+        return redirect(url_for("main.index"))
+    account.delete()
+    flash("Account successfully deleted", "info")
     return redirect(url_for("main.index"))
