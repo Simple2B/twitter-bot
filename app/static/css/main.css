@@ -81,3 +81,65 @@ body {
   padding-top: 250px;
   text-align: center;
 }
+
+.bot__inner {
+  position: relative;
+}
+
+.bot__status {
+  position: absolute;
+  top: 20px;
+  left: 0;
+}
+
+.bot__status-text {
+  display: inline-block;
+  margin-bottom: 20px;
+}
+
+.bot__status-refresh {
+  display: inline-block;
+  margin-left: 15px;
+  border: none;
+  font-size: 0;
+  height: 20px;
+  width: 20px;
+  background: none;
+  outline: transparent;
+  cursor: pointer;
+  background-image: url('../images/icons/refresh.svg');
+  background-repeat: no-repeat;
+  background-size: contain;
+  transition: all 1s;
+}
+
+.bot__status-refresh:focus,
+.bot__status-refresh:active {
+  outline: none;
+  transform: rotate(360deg);
+}
+
+.bot__btn {
+  display: block;
+  padding: 5px 15px;
+  color: #fff;
+  text-align: center;
+  border-radius: 10px;
+}
+
+.bot__btn:hover {
+  color: #fff;
+}
+
+.bot__btn--start {
+  background-color: rgb(13, 190, 13);
+}
+
+.bot__btn--restart {
+  margin-top: 10px;
+  background-color: rgb(247, 176, 44);
+}
+
+.bot__btn--stop {
+  background-color: rgb(190, 13, 13);
+}
