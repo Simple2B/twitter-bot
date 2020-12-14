@@ -69,7 +69,7 @@ def refresh_bot_status():
         return make_response({"status": "Bot is currently offline"}, 200)
 
 
-@main_blueprint.route("/add_twitter_account")
+@main_blueprint.route("/add_twitter_account", methods=['GET', 'POST'])
 @login_required
 def add_twitter_account():
     form = AddTwitterAccountForm()

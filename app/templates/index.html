@@ -29,6 +29,23 @@
               </li>
             {% endfor %}
           </ul>
+
+          <form action="{{ url_for('main.add_twitter_account') }}" class="bot__form">
+            {{ form.hidden_tag() }}
+            <div class="form-group">
+              {% if form.username.errors %}
+                {{ form.username(class="form-control is-invalid", type="text", placeholder="@username") }}
+                <div class="invalid-feedback">
+                  {% for error in form.username.errors %}
+                    <span>{{ error }}</span>
+                  {% endfor %}
+                </div>
+              {% else %}
+                {{ form.username(class="form-control", type="text", placeholder="@username") }}
+              {% endif %}
+              <div class="help-block with-errors"></div>
+            </div>
+          </form>
         </div>
       </div>
     {% else %}
