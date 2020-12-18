@@ -121,10 +121,6 @@ def run_bot(keywords=None):
     bot.save()
     list_of_accounts = [str(account.twitter_id) for account in TwitterAccount.query.all()]
 
-    # if not follow:
-    #     # TODO get followers list from DB?
-    #     pass
-
     if not keywords:
         # parse google sheet and save keywords to DB
         keywords = parse_gsheet()
@@ -132,5 +128,6 @@ def run_bot(keywords=None):
     api = create_api()
     my_stream_listener = Stream_Listener(api)
     my_stream = tweepy.Stream(auth=api.auth, listener=my_stream_listener)
+
 
     my_stream.filter(follow=list_of_accounts, languages=["en"])
