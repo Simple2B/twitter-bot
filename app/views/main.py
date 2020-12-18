@@ -3,7 +3,7 @@ from flask_login import login_required
 
 from app.models import Bot, TwitterAccount, Account
 from app.forms import AddTwitterAccountForm, AddBotAccountForm
-from app.controllers import get_twitter_id
+from app.controllers import get_twitter_id, validate_bot_accounts
 
 
 main_blueprint = Blueprint("main", __name__)
@@ -36,6 +36,8 @@ def run_bot():
     if bot.status == Bot.StatusType.active and bot.action == Bot.ActionType.start:
         flash("Bot is already running", "info")
         return redirect(url_for("main.index"))
+    if not validate_bot_accounts():
+        return redirect(url_for("main.index"))
     bot.action = Bot.ActionType.start
     bot.save()
     flash("Bot has successfully started", "success")
@@ -61,6 +63,8 @@ def restart_bot():
     bot = Bot.query.first()
     if not bot:
         flash("An error occured while restarting bot. Plesase try again", "danger")
+        return redirect(url_for("main.index"))
+    if not validate_bot_accounts():
         return redirect(url_for("main.index"))
     bot.action = Bot.ActionType.restart
     bot.save()
