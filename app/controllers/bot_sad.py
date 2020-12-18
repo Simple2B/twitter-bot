@@ -48,9 +48,9 @@ class BotSad():
                     # further filtering required in order to get precise match for the tweets
                     if [keyword for keyword in self.keywords if(keyword in tweet.text)]:
                         try:
-                            # tweet.retweet()
+                            tweet.retweet()
                             # currently printing results to console for testing purposes
-                            log(log.INFO, 'News Account RT: [%s]', tweet.text)
+                            # log(log.INFO, 'News Account RT: [%s]', tweet.text)
                         except tweepy.TweepError as error:
                             log(log.ERROR, "[%s]", error.reason)
                     else:
@@ -58,9 +58,9 @@ class BotSad():
                             self.bot_sad.retweet(tweet.id)
                         else:
                             try:
-                                # tweet.retweet()
+                                tweet.retweet()
                                 # currently printing results to console for testing purposes
-                                log(log.INFO, 'News Account RT: [%s]', tweet.text)
+                                # log(log.INFO, 'News Account RT: [%s]', tweet.text)
                             except tweepy.TweepError as error:
                                 log(log.ERROR, "[%s]", error.reason)
 
