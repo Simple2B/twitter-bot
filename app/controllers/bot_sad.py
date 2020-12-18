@@ -1,6 +1,8 @@
+import time
+
 import tweepy
 
-from app.models import Account
+from app.models import Account, Bot, TwitterAccount, Keyword, ExclusionKeyword
 from app import log
 
 
@@ -22,15 +24,14 @@ class BotSad():
                 raise error
 
         class Stream_Listener(tweepy.StreamListener):
-            """Defines the tweet status and error state
-
-            """
+            """Defines the tweet status and error state"""
 
             def __init__(self, api, bot_sad):
                 self.api = api
                 self.me = api.me()
                 self.bot_sad = bot_sad
                 self.keywords = [key.word for key in Keyword.query.all()]
+                self.exclusion_keywords = [key.word for key in ExclusionKeyword.query.all()]
 
             def on_status(self, tweet):
                 """Checks the status of the tweet. Mark it as favourite if not already done it and retweet if not already
@@ -46,14 +47,21 @@ class BotSad():
                     # further filtering required in order to get precise match for the tweets
                     if [keyword for keyword in self.keywords if(keyword in tweet.text)]:
                         try:
-                            tweet.retweet()
+                            # tweet.retweet()
                             # currently printing results to console for testing purposes
-                            # print('Stream retweeted tweet:', tweet.text)
+                            log(log.INFO, 'Stream retweeted tweet: [%s]', tweet.text)
                         except tweepy.TweepError as error:
                             log(log.ERROR, "[%s]", error.reason)
                     else:
-                        self.bot_sad.repost(tweet)
-
+                        if [keyword for keyword in self.exclusion_keywords if(keyword in tweet.text)]:
+                            self.bot_sad.retweet_exclusion(tweet.id)
+                        else:
+                            try:
+                                # tweet.retweet()
+                                # currently printing results to console for testing purposes
+                                log(log.INFO, 'Stream retweeted tweet: [%s]', tweet.text)
+                            except tweepy.TweepError as error:
+                                log(log.ERROR, "[%s]", error.reason)
 
             def on_error(self, status_code):
                 """When encountering an error while listening to the stream, return False if `status_code` is 420 and print
@@ -76,11 +84,16 @@ class BotSad():
                 else:
                     log(log.ERROR, "[%s], [%d]", tweepy.TweepError.reason, status_code)
 
-        def retweet():
-            pass
+        def listen(self):
+            list_of_accounts = [str(account.twitter_id) for account in TwitterAccount.query.all()]
+            self.stream_listener = self.Stream_Listener(api=self.api, bot_sad=self.bot_sad)
+            self.stream = tweepy.Stream(auth=self.api.auth, listener=self.stream_listener)
+            self.stream.filter(follow=list_of_accounts, languages=["en"])
 
-    def retweet(self, tweet):
-        worker_exclusion.update_status(tweet)
+        def retweet_exclusion(self, tweet_id):
+            """ Method to retweet a tweet """
+            # self.api.retweet(tweet_id)
+            log(log.INFO, 'Exclusion account RT: [%d]', tweet_id)
 
     def __init__(self):
         accounts = Account.query.all()
@@ -101,6 +114,10 @@ class BotSad():
                     access_token_secret=account.access_token_secret,
                     bot_sad=self
                 )
-        
+
+    def listen(self):
+        log(log.INFO, 'News Account started streaming')
         self.worker_news.listen()
-        
+
+    def retweet(self, tweet_id):
+        self.worker_exclusion.retweet_exclusion(tweet_id)
