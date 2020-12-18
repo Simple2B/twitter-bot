@@ -22,7 +22,7 @@ def index():
         new_follow_form=new_follow_form,
         new_bot_form=new_bot_form,
         accounts=twitter_accounts,
-        bot_accounts=bot_accounts
+        bot_accounts=bot_accounts,
     )
 
 
@@ -37,6 +37,10 @@ def run_bot():
         flash("Bot is already running", "info")
         return redirect(url_for("main.index"))
     if not validate_bot_accounts():
+        flash(  # noqa E501
+            "An error occured while validating bots. Please check if bots are set up properly (keywords, exclusions, twitter accounts)",
+            "danger",
+        )
         return redirect(url_for("main.index"))
     bot.action = Bot.ActionType.start
     bot.save()
@@ -65,6 +69,10 @@ def restart_bot():
         flash("An error occured while restarting bot. Plesase try again", "danger")
         return redirect(url_for("main.index"))
     if not validate_bot_accounts():
+        flash(
+            "An error occured while validating bots. Please check if bots are set up properly",
+            "danger",
+        )
         return redirect(url_for("main.index"))
     bot.action = Bot.ActionType.restart
     bot.save()

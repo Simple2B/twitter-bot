@@ -68,7 +68,6 @@ def drop_db():
 @app.cli.command()
 def bot():
     """Start Twitter Stream bot."""
-    
     log(log.DEBUG, 'Starting bot')
     bot = BotSad()
     bot.listen()
@@ -80,7 +79,6 @@ def manager(start):
     """Start Twitter Stream bot manager."""
     if start:
         bot = Bot.query.first()
-
         # Initial bot activation
         if bot.status == Bot.StatusType.active:
             if bot.action == Bot.ActionType.stop:

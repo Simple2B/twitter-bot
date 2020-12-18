@@ -1,9 +1,8 @@
 import os
 
 import tweepy
-from flask import flash
 
-from app.models import Account
+from app.models import Account, TwitterAccount
 from app.logger import log
 from app.controllers import parse_gsheet
 
@@ -59,23 +58,21 @@ def validate_bot_accounts():
     workers = Account.query.all()
     if len(workers) < 2:
         log(log.ERROR, 'Bots are not set up. Make sure you have both News and Exclusion bots')
-        flash('Bots are not set up. Make sure you have both News and Exclusion bots', 'danger')
         return False
     if not Account.query.filter(Account.role == Account.RoleType.news).first():
         log(log.ERROR, 'News Account is not set up. Make sure you have set up News Account')
-        flash('News Account is not set up. Make sure you have set up News Account', 'danger')
         return False
     if not Account.query.filter(Account.role == Account.RoleType.exclusion).first():
         log(log.ERROR, 'Exclusion Account is not set up. Make sure you have set up Exclusion Account')
-        flash('Exclusion Account is not set up. Make sure you have set up Exclusion Account', 'danger')
+        return False
+    if not TwitterAccount.query.all():
+        log(log.ERROR, 'Twitter Accounts to be followed are not set up')
         return False
     keywords, exclusion_keywords = parse_gsheet()
     if not keywords:
         log(log.ERROR, 'Keywords are not set up. Update keyword list and try again.')
-        flash('Keywords are not set up. Update keyword list and try again.', 'danger')
         return False
     if not exclusion_keywords:
         log(log.ERROR, 'Exclusion keywords are not set up. Update exclusion list and try again.')
-        flash('Exclusion keywords are not set up. Update exclusion list and try again.', 'danger')
         return False
     return True

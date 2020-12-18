@@ -86,15 +86,12 @@ class BotSad():
                     log(log.ERROR, "[%s], [%d]", tweepy.TweepError.reason, status_code)
 
         def listen(self):
-            # list_of_accounts = [str(account.twitter_id) for account in TwitterAccount.query.all()]
-
-            # TODO: remove before deploy. For testing purposes
-            list_of_words = [key.word for key in Keyword.query.all()]
-
+            list_of_accounts = [str(account.twitter_id) for account in TwitterAccount.query.all()]
             self.stream_listener = self.Stream_Listener(api=self.api, bot_sad=self.bot_sad)
             self.stream = tweepy.Stream(auth=self.api.auth, listener=self.stream_listener)
-            # self.stream.filter(follow=list_of_accounts, languages=["en"])
-            self.stream.filter(track=list_of_words, languages=["en"])
+            self.stream.filter(follow=list_of_accounts, languages=["en"])
+            # list_of_words = [key.word for key in Keyword.query.all()]
+            # self.stream.filter(track=list_of_words, languages=["en"])
 
         def retweet_exclusion(self, tweet_id):
             """ Method to retweet a tweet """
@@ -107,6 +104,7 @@ class BotSad():
         if not bot:
             bot = Bot()
         bot.pid = os.getpid()
+        log(log.INFO, "Bot PID: [%d]", bot.pid)
         bot.status = Bot.StatusType.active
         bot.action = Bot.ActionType.start
         bot.save()

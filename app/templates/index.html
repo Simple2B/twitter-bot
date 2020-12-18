@@ -6,27 +6,31 @@
       <div class="container">
         <div class="bot__inner">
           <div class="bot__status">
-            {% if not bot.is_active %}
-              <span class="bot__status-text">Bot is currently offline</span>
-              <button class="bot__status-refresh" onclick="window.location.reload()">Refresh</button>
-              <a class="bot__btn bot__btn--start" href="{{url_for('main.run_bot')}}">Start Bot</a>
-              <a class="bot__btn bot__btn--restart" href="{{url_for('main.restart_bot')}}">Restart</a>
+            {% if bot_accounts|length < 2 %}
+              <span class="bot__status-text">Bot are not configured. Please add News and Exclusion accounts first.</span>
             {% else %}
-              <span class="bot__status-text">Bot is currently running</span>
-              <button class="bot__status-refresh" onclick="window.location.reload()">Refresh</button>
-              <a class="bot__btn bot__btn--stop" href="{{url_for('main.terminate_bot')}}">Stop Bot</a>
-              <a class="bot__btn bot__btn--restart" href="{{url_for('main.restart_bot')}}">Restart</a>
+              {% if not bot.is_active %}
+                <span class="bot__status-text">Bot is currently offline</span>
+                <button class="bot__status-refresh" onclick="window.location.reload()">Refresh</button>
+                <a class="bot__btn bot__btn--start" href="{{url_for('main.run_bot')}}">Start Bot</a>
+                <a class="bot__btn bot__btn--restart" href="{{url_for('main.restart_bot')}}">Restart</a>
+              {% else %}
+                <span class="bot__status-text">Bot is currently running</span>
+                <button class="bot__status-refresh" onclick="window.location.reload()">Refresh</button>
+                <a class="bot__btn bot__btn--stop" href="{{url_for('main.terminate_bot')}}">Stop Bot</a>
+                <a class="bot__btn bot__btn--restart" href="{{url_for('main.restart_bot')}}">Restart</a>
+              {% endif %}
             {% endif %}
 
             <ul class="bot__list">
               {% for bot in bot_accounts %}
                 {% if bot.role.value == 'news' %}
                   <li class="bot__item">
-                    News Account: {{ bot.name }}
+                    News Acc: {{ bot.name }}
                   </li>
                 {% elif bot.role.value == 'exclusion' %}
                   <li class="bot__item">
-                    Exclusion Account: {{ bot.name }}
+                    Exclusion Acc: {{ bot.name }}
                   </li>
                 {% endif %}
               {% endfor %}
