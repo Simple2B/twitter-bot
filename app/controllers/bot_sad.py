@@ -1,9 +1,10 @@
+import os
 import time
 
 import tweepy
 
 from app.models import Account, Bot, TwitterAccount, Keyword, ExclusionKeyword
-from app import log
+from app.logger import log
 
 
 class BotSad():
@@ -49,17 +50,17 @@ class BotSad():
                         try:
                             # tweet.retweet()
                             # currently printing results to console for testing purposes
-                            log(log.INFO, 'Stream retweeted tweet: [%s]', tweet.text)
+                            log(log.INFO, 'News Account RT: [%s]', tweet.text)
                         except tweepy.TweepError as error:
                             log(log.ERROR, "[%s]", error.reason)
                     else:
                         if [keyword for keyword in self.exclusion_keywords if(keyword in tweet.text)]:
-                            self.bot_sad.retweet_exclusion(tweet.id)
+                            self.bot_sad.retweet(tweet.id)
                         else:
                             try:
                                 # tweet.retweet()
                                 # currently printing results to console for testing purposes
-                                log(log.INFO, 'Stream retweeted tweet: [%s]', tweet.text)
+                                log(log.INFO, 'News Account RT: [%s]', tweet.text)
                             except tweepy.TweepError as error:
                                 log(log.ERROR, "[%s]", error.reason)
 
@@ -85,17 +86,31 @@ class BotSad():
                     log(log.ERROR, "[%s], [%d]", tweepy.TweepError.reason, status_code)
 
         def listen(self):
-            list_of_accounts = [str(account.twitter_id) for account in TwitterAccount.query.all()]
+            # list_of_accounts = [str(account.twitter_id) for account in TwitterAccount.query.all()]
+
+            # TODO: remove before deploy. For testing purposes
+            list_of_words = [key.word for key in Keyword.query.all()]
+
             self.stream_listener = self.Stream_Listener(api=self.api, bot_sad=self.bot_sad)
             self.stream = tweepy.Stream(auth=self.api.auth, listener=self.stream_listener)
-            self.stream.filter(follow=list_of_accounts, languages=["en"])
+            # self.stream.filter(follow=list_of_accounts, languages=["en"])
+            self.stream.filter(track=list_of_words, languages=["en"])
 
         def retweet_exclusion(self, tweet_id):
             """ Method to retweet a tweet """
             # self.api.retweet(tweet_id)
-            log(log.INFO, 'Exclusion account RT: [%d]', tweet_id)
+            log(log.INFO, 'Exclusion Account RT: [%d]', tweet_id)
 
     def __init__(self):
+
+        bot = Bot.query.first()
+        if not bot:
+            bot = Bot()
+        bot.pid = os.getpid()
+        bot.status = Bot.StatusType.active
+        bot.action = Bot.ActionType.start
+        bot.save()
+
         accounts = Account.query.all()
         for account in accounts:
             if account.role == Account.RoleType.news:

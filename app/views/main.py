@@ -124,8 +124,8 @@ def add_bot_account():
         account.name = form.name.data
         account.consumer_key = form.consumer_key.data
         account.consumer_secret = form.consumer_secret.data
-        account.account_token = form.account_token.data
-        account.account_token_secret = form.account_token_secret.data
+        account.access_token = form.access_token.data
+        account.access_token_secret = form.access_token_secret.data
         account.save()
         flash(f"{form.role.data} account has been sucessfully updated", "success")
         return redirect(url_for("main.index"))

@@ -19,5 +19,5 @@ class Account(db.Model, ModelMixin):
     role = db.Column(Enum(RoleType))
     consumer_key = db.Column(db.String(256), nullable=False)
     consumer_secret = db.Column(db.String(256), nullable=False)
-    account_token = db.Column(db.String(256), nullable=False)
-    account_token_secret = db.Column(db.String(256), nullable=False)
+    access_token = db.Column(db.String(256), nullable=False)
+    access_token_secret = db.Column(db.String(256), nullable=False)

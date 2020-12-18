@@ -16,7 +16,6 @@ def start_bot():
                 log(log.INFO, "Process [%d] is alredy running", bot.pid)
                 return 1
             bot.status = Bot.StatusType.disabled
-
             bot.save()
     # run bot
     os.system('flask bot &')

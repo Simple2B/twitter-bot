@@ -89,28 +89,28 @@
             </div>
             
             <div class="form-group">
-              {% if new_bot_form.account_token.errors %}
-                {{ new_bot_form.account_token(class="form-control is-invalid", type="text", placeholder="Account token") }}
+              {% if new_bot_form.access_token.errors %}
+                {{ new_bot_form.access_token(class="form-control is-invalid", type="text", placeholder="Access token") }}
                 <div class="invalid-feedback">
                   {% for error in new_bot_form.bot.errors %}
                     <span>{{ error }}</span>
                   {% endfor %}
                 </div>
               {% else %}
-                {{ new_bot_form.account_token(class="form-control bot__form-input", type="text", placeholder="Account token") }}
+                {{ new_bot_form.access_token(class="form-control bot__form-input", type="text", placeholder="Access token") }}
               {% endif %}
             </div>
             
             <div class="form-group">
-              {% if new_bot_form.account_token_secret.errors %}
-                {{ new_bot_form.account_token_secret(class="form-control is-invalid", type="text", placeholder="Account token secret") }}
+              {% if new_bot_form.access_token_secret.errors %}
+                {{ new_bot_form.access_token_secret(class="form-control is-invalid", type="text", placeholder="Access token secret") }}
                 <div class="invalid-feedback">
                   {% for error in new_bot_form.bot.errors %}
                     <span>{{ error }}</span>
                   {% endfor %}
                 </div>
               {% else %}
-                {{ new_bot_form.account_token_secret(class="form-control bot__form-input", type="text", placeholder="Account token secret") }}
+                {{ new_bot_form.access_token_secret(class="form-control bot__form-input", type="text", placeholder="Access token secret") }}
               {% endif %}
             </div>
 

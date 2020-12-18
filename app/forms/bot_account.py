@@ -12,6 +12,6 @@ class AddBotAccountForm(FlaskForm):
     )
     consumer_key = StringField("Consumer Key", [DataRequired()])
     consumer_secret = StringField("Consumer Secret", [DataRequired()])
-    account_token = StringField("Account Token", [DataRequired()])
-    account_token_secret = StringField("Account Token Secret", [DataRequired()])
+    access_token = StringField("Account Token", [DataRequired()])
+    access_token_secret = StringField("Account Token Secret", [DataRequired()])
     submit = SubmitField("Add Account")

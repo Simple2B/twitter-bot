@@ -4,9 +4,9 @@ import os
 import click
 
 from app import create_app, db, models, forms
-from app.models import User, Bot
+from app.models import User, Bot, Account
 from app.logger import log
-from app.controllers import run_bot, start_bot, stop_bot, restart_bot
+from app.controllers import BotSad, start_bot, stop_bot, restart_bot, parse_gsheet
 
 
 app = create_app()
@@ -68,8 +68,27 @@ def drop_db():
 @app.cli.command()
 def bot():
     """Start Twitter Stream bot."""
+    workers = Account.query.all()
+    # TODO: improve bot validation
+    if len(workers) < 2:
+        log(log.ERROR, 'Bots are not set up. Make sure you have both News and Exclusion bots')
+        return
+    if not Account.query.filter(Account.role == Account.RoleType.news).first():
+        log(log.ERROR, 'News Account is not set up. Make sure you have set up News Account')
+        return
+    if not Account.query.filter(Account.role == Account.RoleType.exclusion).first():
+        log(log.ERROR, 'Exclusion Account is not set up. Make sure you have set up Exclusion Account')
+        return
+    keywords, exclusion_keywords = parse_gsheet()
+    if not keywords:
+        log(log.ERROR, 'Keywords are not set up. Update keyword list and try again.')
+        return
+    if not exclusion_keywords:
+        log(log.ERROR, 'Exclusion keywords are not set up. Update exclusion list and try again.')
+        return
     log(log.DEBUG, 'Starting bot')
-    run_bot()
+    bot = BotSad()
+    bot.listen()
 
 
 @app.cli.command()
