@@ -37,10 +37,10 @@ def run_bot():
         flash("Bot is already running", "info")
         return redirect(url_for("main.index"))
     if not validate_bot_accounts():
-        flash(  # noqa E501
-            "An error occured while validating bots. Please check if bots are set up properly (keywords, exclusions, twitter accounts)",
+        flash(
+            "An error occured while validating bots. Please check if bots are set up properly (keywords, exclusions, twitter accounts)", # noqa E501
             "danger",
-        )
+        )  # noqa E501
         return redirect(url_for("main.index"))
     bot.action = Bot.ActionType.start
     bot.save()

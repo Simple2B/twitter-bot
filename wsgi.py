@@ -6,7 +6,7 @@ import click
 from app import create_app, db, models, forms
 from app.models import User, Bot
 from app.logger import log
-from app.controllers import BotSad, start_bot, stop_bot, restart_bot, validate_bot_accounts
+from app.controllers import BotSad, start_bot, stop_bot, restart_bot
 
 
 app = create_app()
