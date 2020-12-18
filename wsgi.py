@@ -6,7 +6,7 @@ import click
 from app import create_app, db, models, forms
 from app.models import User, Bot
 from app.logger import log
-from app.controllers import run_bot, start_bot, stop_bot, restart_bot
+from app.controllers import BotSad, start_bot, stop_bot, restart_bot
 
 
 app = create_app()
@@ -69,7 +69,8 @@ def drop_db():
 def bot():
     """Start Twitter Stream bot."""
     log(log.DEBUG, 'Starting bot')
-    run_bot()
+    bot = BotSad()
+    bot.listen()
 
 
 @app.cli.command()
@@ -78,7 +79,6 @@ def manager(start):
     """Start Twitter Stream bot manager."""
     if start:
         bot = Bot.query.first()
-
         # Initial bot activation
         if bot.status == Bot.StatusType.active:
             if bot.action == Bot.ActionType.stop:

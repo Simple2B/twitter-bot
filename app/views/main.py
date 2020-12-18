@@ -1,9 +1,9 @@
 from flask import render_template, Blueprint, flash, redirect, url_for, make_response
 from flask_login import login_required
 
-from app.models import Bot, TwitterAccount
-from app.forms import AddTwitterAccountForm
-from app.controllers import get_twitter_id
+from app.models import Bot, TwitterAccount, Account
+from app.forms import AddTwitterAccountForm, AddBotAccountForm
+from app.controllers import get_twitter_id, validate_bot_accounts
 
 
 main_blueprint = Blueprint("main", __name__)
@@ -11,10 +11,19 @@ main_blueprint = Blueprint("main", __name__)
 
 @main_blueprint.route("/")
 def index():
-    form = AddTwitterAccountForm()
+    new_follow_form = AddTwitterAccountForm()
+    new_bot_form = AddBotAccountForm()
     bot = Bot.query.first()
+    bot_accounts = Account.query.all()
     twitter_accounts = TwitterAccount.query.all()
-    return render_template("index.html", bot=bot, form=form, accounts=twitter_accounts)
+    return render_template(
+        "index.html",
+        bot=bot,
+        new_follow_form=new_follow_form,
+        new_bot_form=new_bot_form,
+        accounts=twitter_accounts,
+        bot_accounts=bot_accounts,
+    )
 
 
 @main_blueprint.route("/start_bot_stream")
@@ -26,6 +35,12 @@ def run_bot():
         return redirect(url_for("main.index"))
     if bot.status == Bot.StatusType.active and bot.action == Bot.ActionType.start:
         flash("Bot is already running", "info")
+        return redirect(url_for("main.index"))
+    if not validate_bot_accounts():
+        flash(
+            "An error occured while validating bots. Please check if bots are set up properly (keywords, exclusions, twitter accounts)", # noqa E501
+            "danger",
+        )  # noqa E501
         return redirect(url_for("main.index"))
     bot.action = Bot.ActionType.start
     bot.save()
@@ -53,6 +68,12 @@ def restart_bot():
     if not bot:
         flash("An error occured while restarting bot. Plesase try again", "danger")
         return redirect(url_for("main.index"))
+    if not validate_bot_accounts():
+        flash(
+            "An error occured while validating bots. Please check if bots are set up properly",
+            "danger",
+        )
+        return redirect(url_for("main.index"))
     bot.action = Bot.ActionType.restart
     bot.save()
     flash("Bot has successfully restarted", "success")
@@ -69,7 +90,7 @@ def refresh_bot_status():
         return make_response({"status": "Bot is currently offline"}, 200)
 
 
-@main_blueprint.route("/add_twitter_account", methods=['GET', 'POST'])
+@main_blueprint.route("/add_twitter_account", methods=["GET", "POST"])
 @login_required
 def add_twitter_account():
     form = AddTwitterAccountForm()
@@ -82,7 +103,9 @@ def add_twitter_account():
         if not twitter_id:
             flash("Username is invalid. Please check data and try again", "danger")
             return redirect(url_for("main.index"))
-        twitter_account = TwitterAccount(username=form.username.data, twitter_id=twitter_id)
+        twitter_account = TwitterAccount(
+            username=form.username.data, twitter_id=twitter_id
+        )
         twitter_account.save()
         flash("Username successfully added", "success")
     return redirect(url_for("main.index"))
@@ -91,10 +114,32 @@ def add_twitter_account():
 @main_blueprint.route("/delete_twitter_account/<int:twitter_id>")
 @login_required
 def delete_twitter_account(twitter_id):
-    account = TwitterAccount.query.filter(TwitterAccount.twitter_id == twitter_id).first()
+    account = TwitterAccount.query.filter(
+        TwitterAccount.twitter_id == twitter_id
+    ).first()
     if not account:
         flash("No account associated with this id. Please try again", "danger")
         return redirect(url_for("main.index"))
     account.delete()
     flash("Account successfully deleted", "info")
+    return redirect(url_for("main.index"))
+
+
+@main_blueprint.route("/add_bot_account", methods=["GET", "POST"])
+@login_required
+def add_bot_account():
+    form = AddBotAccountForm()
+    if form.validate_on_submit:
+        account = Account.query.filter(Account.role == form.role.data).first()
+        if not account:
+            account = Account(role=form.role.data)
+        account.name = form.name.data
+        account.consumer_key = form.consumer_key.data
+        account.consumer_secret = form.consumer_secret.data
+        account.access_token = form.access_token.data
+        account.access_token_secret = form.access_token_secret.data
+        account.save()
+        flash(f"{form.role.data} account has been sucessfully updated", "success")
+        return redirect(url_for("main.index"))
+    flash("Failed to update, please check your data and try again")
     return redirect(url_for("main.index"))

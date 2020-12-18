@@ -97,6 +97,7 @@ body {
 .bot__status-text {
   display: inline-block;
   margin-bottom: 20px;
+  max-width: 300px;
 }
 
 .bot__status-refresh {

@@ -6,33 +6,136 @@
       <div class="container">
         <div class="bot__inner">
           <div class="bot__status">
-            {% if not bot.is_active %}
-              <span class="bot__status-text">Bot is currently offline</span>
-              <button class="bot__status-refresh" onclick="window.location.reload()">Refresh</button>
-              <a class="bot__btn bot__btn--start" href="{{url_for('main.run_bot')}}">Start Bot</a>
-              <a class="bot__btn bot__btn--restart" href="{{url_for('main.restart_bot')}}">Restart</a>
+            {% if bot_accounts|length < 2 %}
+              <span class="bot__status-text">Bot are not configured. Please add News and Exclusion accounts first.</span>
             {% else %}
-              <span class="bot__status-text">Bot is currently running</span>
-              <button class="bot__status-refresh" onclick="window.location.reload()">Refresh</button>
-              <a class="bot__btn bot__btn--stop" href="{{url_for('main.terminate_bot')}}">Stop Bot</a>
-              <a class="bot__btn bot__btn--restart" href="{{url_for('main.restart_bot')}}">Restart</a>
+              {% if not bot.is_active %}
+                <span class="bot__status-text">Bot is currently offline</span>
+                <button class="bot__status-refresh" onclick="window.location.reload()">Refresh</button>
+                <a class="bot__btn bot__btn--start" href="{{url_for('main.run_bot')}}">Start Bot</a>
+                <a class="bot__btn bot__btn--restart" href="{{url_for('main.restart_bot')}}">Restart</a>
+              {% else %}
+                <span class="bot__status-text">Bot is currently running</span>
+                <button class="bot__status-refresh" onclick="window.location.reload()">Refresh</button>
+                <a class="bot__btn bot__btn--stop" href="{{url_for('main.terminate_bot')}}">Stop Bot</a>
+                <a class="bot__btn bot__btn--restart" href="{{url_for('main.restart_bot')}}">Restart</a>
+              {% endif %}
             {% endif %}
+
+            <ul class="bot__list">
+              {% for bot in bot_accounts %}
+                {% if bot.role.value == 'news' %}
+                  <li class="bot__item">
+                    News Acc: {{ bot.name }}
+                  </li>
+                {% elif bot.role.value == 'exclusion' %}
+                  <li class="bot__item">
+                    Exclusion Acc: {{ bot.name }}
+                  </li>
+                {% endif %}
+              {% endfor %}
+            </ul>
           </div>
+
+          <form action="{{ url_for('main.add_bot_account') }}" class="bot__form" method="POST">
+            <span class="bot__form-title">Add/Update bot account</span>
+            {{ new_bot_form.hidden_tag() }}
+            <div class="form-group">
+              {% if new_bot_form.name.errors %}
+                {{ new_bot_form.name(class="form-control is-invalid", type="text", placeholder="Bot name") }}
+                <div class="invalid-feedback">
+                  {% for error in new_bot_form.bot.errors %}
+                    <span>{{ error }}</span>
+                  {% endfor %}
+                </div>
+              {% else %}
+                {{ new_bot_form.name(class="form-control bot__form-input", type="text", placeholder="Bot name") }}
+              {% endif %}
+            </div>
+
+            <div class="form-group">
+              {% if new_bot_form.role.errors %}
+                {{ new_bot_form.role(class="form-control is-invalid", type="select") }}
+                <div class="invalid-feedback">
+                  {% for error in new_bot_form.bot.errors %}
+                    <span>{{ error }}</span>
+                  {% endfor %}
+                </div>
+              {% else %}
+                {{ new_bot_form.role(class="form-control bot__form-input", type="select") }}
+              {% endif %}
+            </div>
+
+            <div class="form-group">
+              {% if new_bot_form.consumer_key.errors %}
+                {{ new_bot_form.consumer_key(class="form-control is-invalid", type="text", placeholder="Consumer key") }}
+                <div class="invalid-feedback">
+                  {% for error in new_bot_form.bot.errors %}
+                    <span>{{ error }}</span>
+                  {% endfor %}
+                </div>
+              {% else %}
+                {{ new_bot_form.consumer_key(class="form-control bot__form-input", type="text", placeholder="Consumer key") }}
+              {% endif %}
+            </div>
+            
+            <div class="form-group">
+              {% if new_bot_form.consumer_secret.errors %}
+                {{ new_bot_form.consumer_secret(class="form-control is-invalid", type="text", placeholder="Consumer secret") }}
+                <div class="invalid-feedback">
+                  {% for error in new_bot_form.bot.errors %}
+                    <span>{{ error }}</span>
+                  {% endfor %}
+                </div>
+              {% else %}
+                {{ new_bot_form.consumer_secret(class="form-control bot__form-input", type="text", placeholder="Consumer secret") }}
+              {% endif %}
+            </div>
+            
+            <div class="form-group">
+              {% if new_bot_form.access_token.errors %}
+                {{ new_bot_form.access_token(class="form-control is-invalid", type="text", placeholder="Access token") }}
+                <div class="invalid-feedback">
+                  {% for error in new_bot_form.bot.errors %}
+                    <span>{{ error }}</span>
+                  {% endfor %}
+                </div>
+              {% else %}
+                {{ new_bot_form.access_token(class="form-control bot__form-input", type="text", placeholder="Access token") }}
+              {% endif %}
+            </div>
+            
+            <div class="form-group">
+              {% if new_bot_form.access_token_secret.errors %}
+                {{ new_bot_form.access_token_secret(class="form-control is-invalid", type="text", placeholder="Access token secret") }}
+                <div class="invalid-feedback">
+                  {% for error in new_bot_form.bot.errors %}
+                    <span>{{ error }}</span>
+                  {% endfor %}
+                </div>
+              {% else %}
+                {{ new_bot_form.access_token_secret(class="form-control bot__form-input", type="text", placeholder="Access token secret") }}
+              {% endif %}
+            </div>
+
+
+            {{ new_bot_form.submit(class="form-control-submit-button bot__form-submit") }}
+          </form>
 
           <div class="bot__accounts">
             <form action="{{ url_for('main.add_twitter_account') }}" class="bot__form form-inline" method="POST">
-              {{ form.hidden_tag() }}
+              {{ new_follow_form.hidden_tag() }}
               <div class="form-group">
-                {% if form.username.errors %}
-                  {{ form.username(class="form-control is-invalid", type="text", placeholder="@username") }}
+                {% if new_follow_form.username.errors %}
+                  {{ new_follow_form.username(class="form-control is-invalid", type="text", placeholder="@username") }}
                   <div class="invalid-feedback">
-                    {% for error in form.username.errors %}
+                    {% for error in new_follow_form.username.errors %}
                       <span>{{ error }}</span>
                     {% endfor %}
                   </div>
                 {% else %}
-                  {{ form.username(class="form-control bot__form-input", type="text", placeholder="@username") }}
-                  {{ form.submit(class="form-control-submit-button bot__form-submit") }}
+                  {{ new_follow_form.username(class="form-control bot__form-input", type="text", placeholder="@username") }}
+                  {{ new_follow_form.submit(class="form-control-submit-button bot__form-submit") }}
                 {% endif %}
                 <div class="help-block with-errors"></div>
               </div>
